@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.erykhf.android.ohmebreakingbadtechtest.R
 import com.erykhf.android.ohmebreakingbadtechtest.databinding.FragmentCharacterListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,8 +44,15 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
                 recyclerViewAdapter.updateList(it)
                 Log.d("TAG", "onViewCreated: ${it?.firstOrNull()?.name}")
             }
+        }
 
+        navigateToDetails()
+    }
 
+    private fun navigateToDetails(){
+        recyclerViewAdapter.setOnItemClickListener {
+            val action = CharactersFragmentDirections.actionCharactersFragmentToCharacterDetailsFragment(it)
+            findNavController().navigate(action)
         }
     }
 }

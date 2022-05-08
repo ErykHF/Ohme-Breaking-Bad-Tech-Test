@@ -1,5 +1,8 @@
 package com.erykhf.android.ohmebreakingbadtechtest.model
 
+import android.os.Parcelable
+import java.io.Serializable
+
 data class BreakingBadCharacterItem(
     val appearance: List<Any> = listOf(),
     val better_call_saul_appearance: List<Int> = listOf(),
@@ -12,4 +15,4 @@ data class BreakingBadCharacterItem(
     val occupation: List<String> = listOf(),
     val portrayed: String = "",
     val status: String = ""
-)
+): Serializable

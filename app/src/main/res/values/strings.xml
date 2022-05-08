@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Ohme Breaking Bad Tech Test</string>
+    <string name="image_of_character">Image of character</string>
+    <string name="character_name">Name</string>
 </resources>

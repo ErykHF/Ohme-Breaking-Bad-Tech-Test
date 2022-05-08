@@ -6,11 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.erykhf.android.ohmebreakingbadtechtest.databinding.FragmentCharacterBinding
 import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
+import com.erykhf.android.ohmebreakingbadtechtest.util.Util
+import com.erykhf.android.ohmebreakingbadtechtest.util.Util.loadImage
 
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
 class MyCharactersRecyclerViewAdapter(
 ) : RecyclerView.Adapter<MyCharactersRecyclerViewAdapter.ViewHolder>() {
 
@@ -38,17 +36,33 @@ class MyCharactersRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = item.name
-        holder.contentView.text = item.portrayed
+        val progressDrawable = Util.getProgressDrawable(holder.itemView.context)
+        holder.characterName.text = item.name
+        holder.image.loadImage(item.img, progressDrawable)
+
+        holder.itemView.apply {
+            setOnClickListener {
+                onItemClickListener?.let {
+                    it(item)
+                }
+            }
+        }
     }
 
     override fun getItemCount(): Int = values.size
 
     inner class ViewHolder(binding: FragmentCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val idView: TextView = binding.itemNumber
-        val contentView: TextView = binding.content
-
+        val characterName: TextView = binding.characterName
+        val image = binding.theImage
     }
+
+    private var onItemClickListener: ((BreakingBadCharacterItem) -> Unit)? = null
+
+    fun setOnItemClickListener(listener: (BreakingBadCharacterItem) -> Unit){
+        onItemClickListener = listener
+    }
+
+
 
 }
