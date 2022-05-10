@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 class Repository @Inject constructor(private val api: BreakingBadApi) {
 
+
     suspend fun loadBBCharacters() = withContext(Dispatchers.IO) {
 
         val response = api.getCharacters()
@@ -24,10 +25,7 @@ class Repository @Inject constructor(private val api: BreakingBadApi) {
         } else {
             throw BreakingError(result.message().toString(), null)
         }
-
-
     }
-
 }
 
 class BreakingError(message: String, cause: Throwable?) : Throwable(message, cause)

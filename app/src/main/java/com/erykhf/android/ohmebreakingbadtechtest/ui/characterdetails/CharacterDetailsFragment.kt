@@ -9,6 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.erykhf.android.ohmebreakingbadtechtest.R
 import com.erykhf.android.ohmebreakingbadtechtest.databinding.FragmentCharacterDetailsBinding
+import com.erykhf.android.ohmebreakingbadtechtest.util.Util
+import com.erykhf.android.ohmebreakingbadtechtest.util.Util.loadImage
 
 class CharacterDetailsFragment : Fragment(R.layout.fragment_character_details) {
 
@@ -18,22 +20,29 @@ class CharacterDetailsFragment : Fragment(R.layout.fragment_character_details) {
     private lateinit var binding: FragmentCharacterDetailsBinding
 
 
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View {
-//        binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
-//
-//        return binding.root
-//    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentCharacterDetailsBinding.bind(view)
+        val progressDrawable = Util.getProgressDrawable(requireContext())
 
-        binding.message.text = args.character.name
+        args.character.apply {
+            binding.mainImage.loadImage(img, progressDrawable)
+            binding.characterName.text = name
+            binding.occupation.text = occupation.joinToString("\n")
+            binding.status.text = status
+            binding.nickname.text = nickname
+            binding.seasonAppearance.text = appearance.joinToString("-")
+        }
 
     }
 

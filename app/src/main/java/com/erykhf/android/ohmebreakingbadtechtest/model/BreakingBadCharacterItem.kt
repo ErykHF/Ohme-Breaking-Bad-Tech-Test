@@ -4,7 +4,7 @@ import android.os.Parcelable
 import java.io.Serializable
 
 data class BreakingBadCharacterItem(
-    val appearance: List<Any> = listOf(),
+    val appearance: List<Int> = listOf(),
     val better_call_saul_appearance: List<Int> = listOf(),
     val birthday: String = "",
     val category: String = "",

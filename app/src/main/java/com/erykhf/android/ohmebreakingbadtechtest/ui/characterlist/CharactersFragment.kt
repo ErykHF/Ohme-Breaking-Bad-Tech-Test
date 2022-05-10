@@ -2,13 +2,12 @@ package com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.erykhf.android.ohmebreakingbadtechtest.R
@@ -18,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CharactersFragment : Fragment(R.layout.fragment_character_list) {
 
-    lateinit var binding: FragmentCharacterListBinding
+    private lateinit var binding: FragmentCharacterListBinding
     private val recyclerViewAdapter = MyCharactersRecyclerViewAdapter()
     private val viewModel: CharactersViewModel by viewModels()
 
@@ -28,31 +27,93 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCharacterListBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView(FilterSeasons.ALL_SEASONS)
+        navigateToDetails()
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.menu_filter -> {
+                showFilteringPopUpMenu()
+                true
+            }
+            else -> false
+        }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.characters_fragment_menu, menu)
+
+        val searchItem: MenuItem = menu.findItem(R.id.menu_item_search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.apply {
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(queryText: String): Boolean {
+                    Log.d("MainActivity", "QueryTextSubmit: $queryText")
+                    return false
+                }
+
+                override fun onQueryTextChange(queryText: String): Boolean {
+                    Log.d("MainActivity", "QueryTextChange: $queryText")
+                    recyclerViewAdapter.filter.filter(queryText)
+                    return true
+                }
+            })
+        }
+    }
+
+    private fun navigateToDetails() {
+        recyclerViewAdapter.setOnItemClickListener {
+            val action =
+                CharactersFragmentDirections.actionCharactersFragmentToCharacterDetailsFragment(it)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun setupRecyclerView(filterSeasons: FilterSeasons) {
         binding.list.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = recyclerViewAdapter
 
             viewModel.characters.observe(viewLifecycleOwner) {
-                recyclerViewAdapter.updateList(it)
-                Log.d("TAG", "onViewCreated: ${it?.firstOrNull()?.name}")
+                val list = viewModel.filterSeasons(filterSeasons)
+                recyclerViewAdapter.updateList(list)
+                Log.d("TAG", "onViewCreated: ${list.size}")
             }
         }
-
-        navigateToDetails()
     }
 
-    private fun navigateToDetails(){
-        recyclerViewAdapter.setOnItemClickListener {
-            val action = CharactersFragmentDirections.actionCharactersFragmentToCharacterDetailsFragment(it)
-            findNavController().navigate(action)
+    private fun showFilteringPopUpMenu() {
+        val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
+        PopupMenu(requireContext(), view).run {
+            menuInflater.inflate(R.menu.filter_seasons, menu)
+
+            setOnMenuItemClickListener {
+
+                when (it.itemId) {
+                    R.id.one -> {
+                        setupRecyclerView(FilterSeasons.SEASON_ONE)
+                        Toast.makeText(requireContext(), "Season One", Toast.LENGTH_SHORT).show()
+                    }
+                    R.id.two -> setupRecyclerView(FilterSeasons.SEASON_TWO)
+                    R.id.three -> setupRecyclerView(FilterSeasons.SEASON_THREE)
+                    R.id.four -> setupRecyclerView(FilterSeasons.SEASON_FOUR)
+                    R.id.five ->  setupRecyclerView(FilterSeasons.SEASON_FIVE)
+                    else -> FilterSeasons.ALL_SEASONS
+                }
+                true
+            }
+            show()
         }
     }
 }
