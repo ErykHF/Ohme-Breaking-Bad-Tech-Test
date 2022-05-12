@@ -3,7 +3,7 @@ package com.erykhf.android.ohmebreakingbadtechtest.di
 import android.content.Context
 import com.erykhf.android.ohmebreakingbadtechtest.data.source.Repository
 import com.erykhf.android.ohmebreakingbadtechtest.data.source.remote.BreakingBadApi
-import com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist.PreferenceManager
+import com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist.FilterSeasons
 import com.erykhf.android.ohmebreakingbadtechtest.util.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -32,11 +32,5 @@ class AppModule {
     @Singleton
     @Provides
     fun provideRepository(api: BreakingBadApi) = Repository(api)
-
-
-    @Provides
-    @Singleton
-    fun dataStoreManager(@ApplicationContext appContext: Context): PreferenceManager =
-        PreferenceManager(appContext)
 
 }

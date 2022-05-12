@@ -38,10 +38,10 @@ class CharacterDetailsFragment : Fragment(R.layout.fragment_character_details) {
         args.character.apply {
             binding.mainImage.loadImage(img, progressDrawable)
             binding.characterName.text = name
-            binding.occupation.text = occupation.joinToString("\n")
-            binding.status.text = status
-            binding.nickname.text = nickname
-            binding.seasonAppearance.text = appearance.joinToString("-")
+            binding.occupation.text = getString(R.string.occupation, occupation.joinToString("\n"))
+            binding.status.text = getString(R.string.status, status)
+            binding.nickname.text = getString(R.string.nickname, nickname)
+            binding.seasonAppearance.text = getString(R.string.seasons, appearance.joinToString("-"))
         }
 
     }

@@ -11,4 +11,9 @@
     <string name="five">Five</string>
     <string name="search">Search</string>
 
+    <string name="occupation">Occupation: %1$s</string>
+    <string name="status">Status: %1$s</string>
+    <string name="nickname">Nickname: %1$s</string>
+    <string name="seasons">Season: %1$s</string>
+
 </resources>

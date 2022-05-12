@@ -10,8 +10,10 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.erykhf.android.ohmebreakingbadtechtest.R
 import com.erykhf.android.ohmebreakingbadtechtest.databinding.FragmentCharacterListBinding
+import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,19 +36,24 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView(FilterSeasons.ALL_SEASONS)
+        showError()
+        setupRecyclerView()
         navigateToDetails()
 
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
+
         when (item.itemId) {
             R.id.menu_filter -> {
                 showFilteringPopUpMenu()
                 true
             }
-            else -> false
+            else -> {
+                false
+            }
         }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.characters_fragment_menu, menu)
@@ -79,16 +86,35 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
         }
     }
 
-    private fun setupRecyclerView(filterSeasons: FilterSeasons) {
+    private fun setupRecyclerView() {
         binding.list.apply {
             layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             adapter = recyclerViewAdapter
 
             viewModel.characters.observe(viewLifecycleOwner) {
-                val list = viewModel.filterSeasons(filterSeasons)
-                recyclerViewAdapter.updateList(list)
-                Log.d("TAG", "onViewCreated: ${list.size}")
+                it?.let {
+                    recyclerViewAdapter.updateList(it)
+                    Log.d("TAG", "onViewCreated: ${it.size}")
+                }
+            }
+        }
+    }
+
+    private fun showError() {
+        viewModel.spinner.observe(viewLifecycleOwner) { value ->
+            value.let { show ->
+                binding.spinner.visibility = if (show) View.VISIBLE else View.GONE
+            }
+        }
+        viewModel.errorText.observe(viewLifecycleOwner) { text ->
+            text?.let {
+                binding.errorTextView.apply {
+                    this.text = text
+                    visibility = View.VISIBLE
+                }
+                binding.list.visibility = View.GONE
+                viewModel.onErrorTextShown()
             }
         }
     }
@@ -98,18 +124,40 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
         PopupMenu(requireContext(), view).run {
             menuInflater.inflate(R.menu.filter_seasons, menu)
 
+
             setOnMenuItemClickListener {
 
                 when (it.itemId) {
                     R.id.one -> {
-                        setupRecyclerView(FilterSeasons.SEASON_ONE)
-                        Toast.makeText(requireContext(), "Season One", Toast.LENGTH_SHORT).show()
+                        viewModel.season.value = FilterSeasons.SEASON_ONE
+                        Toast.makeText(requireContext(), "Season One", Toast.LENGTH_SHORT)
+                            .show()
                     }
-                    R.id.two -> setupRecyclerView(FilterSeasons.SEASON_TWO)
-                    R.id.three -> setupRecyclerView(FilterSeasons.SEASON_THREE)
-                    R.id.four -> setupRecyclerView(FilterSeasons.SEASON_FOUR)
-                    R.id.five ->  setupRecyclerView(FilterSeasons.SEASON_FIVE)
-                    else -> FilterSeasons.ALL_SEASONS
+                    R.id.two -> {
+                        viewModel.season.value = FilterSeasons.SEASON_TWO
+                        Toast.makeText(requireContext(), "Season Two", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    R.id.three -> {
+                        viewModel.season.value = FilterSeasons.SEASON_THREE
+                        Toast.makeText(requireContext(), "Season Three", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    R.id.four -> {
+                        viewModel.season.value = FilterSeasons.SEASON_FOUR
+                        Toast.makeText(requireContext(), "Season Four", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    R.id.five -> {
+                        viewModel.season.value = FilterSeasons.SEASON_FIVE
+                        Toast.makeText(requireContext(), "Season Five", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    else -> {
+                        viewModel.season.value = FilterSeasons.ALL_SEASONS
+                        Toast.makeText(requireContext(), "All Seasons", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
                 true
             }
@@ -117,3 +165,4 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
         }
     }
 }
+
