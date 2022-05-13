@@ -27,21 +27,21 @@ class CharactersViewModel @Inject constructor(
     private var ifFiltering = true
 
 
-    fun filterSeasons(query: Int){
-        val listToSearch = if (ifFiltering){
+    fun filterSeasons(query: Int) {
+        val listToSearch = if (ifFiltering) {
             _characters.value
         } else {
-             chachedCharacters
+            chachedCharacters
         }
         viewModelScope.launch {
-            if (query == 0){
+            if (query == 0) {
                 _characters.value = chachedCharacters
                 return@launch
             }
             val results = listToSearch?.filter {
-                it.appearance.any { it == query }
+                it.appearance.any { season -> season == query }
             }
-            if (ifFiltering){
+            if (ifFiltering) {
                 chachedCharacters = _characters.value!!
                 ifFiltering = false
             }
