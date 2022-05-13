@@ -3,7 +3,6 @@ package com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist
 import androidx.lifecycle.*
 import com.erykhf.android.ohmebreakingbadtechtest.data.source.Repository
 import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
-import com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist.FilterSeasons.*
 import com.erykhf.android.ohmebreakingbadtechtest.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,21 +17,18 @@ class CharactersViewModel @Inject constructor(
     private val _spinner = MutableLiveData<Boolean>(false)
     val spinner: LiveData<Boolean> = _spinner
 
-    val season = MutableLiveData<FilterSeasons>()
-
     private val _errorText = MutableLiveData<String?>()
     val errorText: LiveData<String?> = _errorText
 
     private val _characters = MutableLiveData<List<BreakingBadCharacterItem>?>()
     val characters: LiveData<List<BreakingBadCharacterItem>?> = _characters
 
-
     private var chachedCharacters = listOf<BreakingBadCharacterItem>()
-    private var isSearchStarting = true
+    private var ifFiltering = true
 
 
     fun filterSeasons(query: Int){
-        val listToSearch = if (isSearchStarting){
+        val listToSearch = if (ifFiltering){
             _characters.value
         } else {
              chachedCharacters
@@ -45,9 +41,9 @@ class CharactersViewModel @Inject constructor(
             val results = listToSearch?.filter {
                 it.appearance.any { it == query }
             }
-            if (isSearchStarting){
+            if (ifFiltering){
                 chachedCharacters = _characters.value!!
-                isSearchStarting = false
+                ifFiltering = false
             }
             _characters.value = results
         }
@@ -56,7 +52,6 @@ class CharactersViewModel @Inject constructor(
 
     init {
         getAllCharacters()
-        season.value = ALL_SEASONS
     }
 
     fun getAllCharacters() {
