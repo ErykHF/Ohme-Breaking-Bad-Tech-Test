@@ -26,7 +26,6 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
     private val viewModel: CharactersViewModel by viewModels()
     private lateinit var connectionLiveData: ConnectionLiveData
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -147,32 +146,32 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
 
                 when (it.itemId) {
                     R.id.one -> {
-                        viewModel.season.value = FilterSeasons.SEASON_ONE
+                        viewModel.filterSeasons(1)
                         Toast.makeText(requireContext(), "Season One", Toast.LENGTH_SHORT)
                             .show()
                     }
                     R.id.two -> {
-                        viewModel.season.value = FilterSeasons.SEASON_TWO
+                        viewModel.filterSeasons(2)
                         Toast.makeText(requireContext(), "Season Two", Toast.LENGTH_SHORT)
                             .show()
                     }
                     R.id.three -> {
-                        viewModel.season.value = FilterSeasons.SEASON_THREE
+                        viewModel.filterSeasons(3)
                         Toast.makeText(requireContext(), "Season Three", Toast.LENGTH_SHORT)
                             .show()
                     }
                     R.id.four -> {
-                        viewModel.season.value = FilterSeasons.SEASON_FOUR
+                        viewModel.filterSeasons(4)
                         Toast.makeText(requireContext(), "Season Four", Toast.LENGTH_SHORT)
                             .show()
                     }
                     R.id.five -> {
-                        viewModel.season.value = FilterSeasons.SEASON_FIVE
+                        viewModel.filterSeasons(5)
                         Toast.makeText(requireContext(), "Season Five", Toast.LENGTH_SHORT)
                             .show()
                     }
                     else -> {
-                        viewModel.season.value = FilterSeasons.ALL_SEASONS
+                        viewModel.filterSeasons(0)
                         Toast.makeText(requireContext(), "All Seasons", Toast.LENGTH_SHORT)
                             .show()
                     }

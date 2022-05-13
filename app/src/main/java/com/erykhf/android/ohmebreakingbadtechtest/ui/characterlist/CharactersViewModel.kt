@@ -24,33 +24,34 @@ class CharactersViewModel @Inject constructor(
     val errorText: LiveData<String?> = _errorText
 
     private val _characters = MutableLiveData<List<BreakingBadCharacterItem>?>()
-    val characters: LiveData<List<BreakingBadCharacterItem>?> =
-        _characters.map { seasons ->
+    val characters: LiveData<List<BreakingBadCharacterItem>?> = _characters
 
-            when (season.value) {
-                ALL_SEASONS -> {
-                    seasons
-                }
-                SEASON_ONE -> seasons?.filter {
-                    it.appearance.any { it == 1 }
-                }
-                SEASON_TWO -> seasons?.filter {
-                    it.appearance.any { it == 2 }
-                }
-                SEASON_THREE -> seasons?.filter {
-                    it.appearance.any { it == 3 }
-                }
-                SEASON_FOUR -> seasons?.filter {
-                    it.appearance.any { it == 4 }
-                }
-                SEASON_FIVE -> seasons?.filter {
-                    it.appearance.any { it == 5 }
-                }
-                else -> {
-                    seasons
-                }
-            }
+
+    private var chachedCharacters = listOf<BreakingBadCharacterItem>()
+    private var isSearchStarting = true
+
+
+    fun filterSeasons(query: Int){
+        val listToSearch = if (isSearchStarting){
+            _characters.value
+        } else {
+             chachedCharacters
         }
+        viewModelScope.launch {
+            if (query == 0){
+                _characters.value = chachedCharacters
+                return@launch
+            }
+            val results = listToSearch?.filter {
+                it.appearance.any { it == query }
+            }
+            if (isSearchStarting){
+                chachedCharacters = _characters.value!!
+                isSearchStarting = false
+            }
+            _characters.value = results
+        }
+    }
 
 
     init {
