@@ -2,30 +2,22 @@ package com.erykhf.android.ohmebreakingbadtechtest.data.source
 
 import com.erykhf.android.ohmebreakingbadtechtest.data.source.remote.BreakingBadApi
 import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
+import com.erykhf.android.ohmebreakingbadtechtest.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.lang.Exception
 import javax.inject.Inject
 
 class Repository @Inject constructor(private val api: BreakingBadApi) {
 
-
-    suspend fun loadBBCharacters() = withContext(Dispatchers.IO) {
-
-        val response = api.getCharacters()
+    suspend fun loadBBCharacters(): Resource<List<BreakingBadCharacterItem>> {
 
         val result = try {
-            response
-        } catch (cause: Throwable) {
-            throw BreakingError("Error", cause)
+            api.getCharacters()
+        } catch (e: Exception) {
+            return Resource.Error("Some Kind Of Error Occurred")
         }
-
-        if (result.isSuccessful) {
-            result.body()
-        } else {
-            throw BreakingError(result.message().toString(), null)
-        }
+        return Resource.Success(result)
     }
 }
-
-class BreakingError(message: String, cause: Throwable?) : Throwable(message, cause)

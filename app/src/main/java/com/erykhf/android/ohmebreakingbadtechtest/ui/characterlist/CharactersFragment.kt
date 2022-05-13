@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.erykhf.android.ohmebreakingbadtechtest.R
 import com.erykhf.android.ohmebreakingbadtechtest.databinding.FragmentCharacterListBinding
 import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
+import com.erykhf.android.ohmebreakingbadtechtest.networkutils.ConnectionLiveData
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,6 +24,7 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
     private lateinit var binding: FragmentCharacterListBinding
     private val recyclerViewAdapter = MyCharactersRecyclerViewAdapter()
     private val viewModel: CharactersViewModel by viewModels()
+    private lateinit var connectionLiveData: ConnectionLiveData
 
 
     override fun onCreateView(
@@ -36,10 +39,53 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showError()
-        setupRecyclerView()
         navigateToDetails()
+        setupRecyclerView()
+        observeLoadingAndError()
+        observeViewModel()
 
+        connectionLiveData = ConnectionLiveData(requireContext())
+        connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
+
+            if (isNetworkAvailable == false) {
+                Snackbar.make(view, "No Internet Connection", Snackbar.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.characters.observe(viewLifecycleOwner) { characters ->
+            if (characters == null) {
+                binding.list.visibility = View.GONE
+            }
+            recyclerViewAdapter.updateList(characters)
+            binding.list.visibility = View.VISIBLE
+            Log.d("TAG", "onViewCreated: ${characters?.size}")
+        }
+    }
+
+    private fun observeLoadingAndError() {
+        viewModel.errorText.observe(viewLifecycleOwner) { text ->
+            text?.let {
+                binding.errorTextView.text = it
+                binding.errorTextView.visibility = View.VISIBLE
+                binding.errorButton?.visibility = View.VISIBLE
+                binding.errorButton?.setOnClickListener {
+                    viewModel.getAllCharacters()
+                }
+                viewModel.onErrorTextShown()
+            }
+        }
+        viewModel.spinner.observe(viewLifecycleOwner) { value ->
+            value.let {
+                binding.spinner.visibility = if (it) View.VISIBLE else View.GONE
+                if (it) {
+                    binding.errorTextView.visibility = View.GONE
+                    binding.list.visibility = View.GONE
+                    binding.errorButton?.visibility = View.GONE
+                }
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
@@ -88,34 +134,7 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
 
     private fun setupRecyclerView() {
         binding.list.apply {
-            layoutManager =
-                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             adapter = recyclerViewAdapter
-
-            viewModel.characters.observe(viewLifecycleOwner) {
-                it?.let {
-                    recyclerViewAdapter.updateList(it)
-                    Log.d("TAG", "onViewCreated: ${it.size}")
-                }
-            }
-        }
-    }
-
-    private fun showError() {
-        viewModel.spinner.observe(viewLifecycleOwner) { value ->
-            value.let { show ->
-                binding.spinner.visibility = if (show) View.VISIBLE else View.GONE
-            }
-        }
-        viewModel.errorText.observe(viewLifecycleOwner) { text ->
-            text?.let {
-                binding.errorTextView.apply {
-                    this.text = text
-                    visibility = View.VISIBLE
-                }
-                binding.list.visibility = View.GONE
-                viewModel.onErrorTextShown()
-            }
         }
     }
 
@@ -123,7 +142,6 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
         val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
         PopupMenu(requireContext(), view).run {
             menuInflater.inflate(R.menu.filter_seasons, menu)
-
 
             setOnMenuItemClickListener {
 

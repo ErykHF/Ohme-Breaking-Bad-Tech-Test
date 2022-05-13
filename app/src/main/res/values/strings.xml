@@ -15,5 +15,6 @@
     <string name="status">Status: %1$s</string>
     <string name="nickname">Nickname: %1$s</string>
     <string name="seasons">Season: %1$s</string>
+    <string name="retry_button">Retry</string>
 
 </resources>

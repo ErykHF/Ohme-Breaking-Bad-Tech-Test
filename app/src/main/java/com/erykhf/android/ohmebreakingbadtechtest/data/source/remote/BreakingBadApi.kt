@@ -7,5 +7,5 @@ import retrofit2.http.GET
 interface BreakingBadApi {
 
     @GET("characters")
-    suspend fun getCharacters(): Response<List<BreakingBadCharacterItem>>
+    suspend fun getCharacters(): List<BreakingBadCharacterItem>
 }

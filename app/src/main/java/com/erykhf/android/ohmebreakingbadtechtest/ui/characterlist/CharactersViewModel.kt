@@ -1,10 +1,10 @@
 package com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist
 
 import androidx.lifecycle.*
-import com.erykhf.android.ohmebreakingbadtechtest.data.source.BreakingError
 import com.erykhf.android.ohmebreakingbadtechtest.data.source.Repository
 import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
 import com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist.FilterSeasons.*
+import com.erykhf.android.ohmebreakingbadtechtest.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +19,6 @@ class CharactersViewModel @Inject constructor(
     val spinner: LiveData<Boolean> = _spinner
 
     val season = MutableLiveData<FilterSeasons>()
-
 
     private val _errorText = MutableLiveData<String?>()
     val errorText: LiveData<String?> = _errorText
@@ -59,23 +58,24 @@ class CharactersViewModel @Inject constructor(
         season.value = ALL_SEASONS
     }
 
-    fun updateSeason (filterSeasons: FilterSeasons){
-        season.value = filterSeasons
-    }
-
-
-    private fun getAllCharacters() =
+    fun getAllCharacters() {
         viewModelScope.launch {
-            try {
-                _spinner.postValue(true)
-                val response = repository.loadBBCharacters()
-                _characters.postValue(response)
-            } catch (error: BreakingError) {
-                _errorText.postValue(error.message)
-            } finally {
-                _spinner.postValue(false)
+            _spinner.value = true
+            val result = repository.loadBBCharacters()
+            when (result) {
+                is Resource.Success -> {
+                    _characters.postValue(result.data)
+                    _spinner.value = false
+                }
+                is Resource.Error -> {
+                    _errorText.value = result.message
+                    _spinner.value = false
+                }
+
             }
         }
+    }
+
 
     fun onErrorTextShown() {
         _errorText.value = null
