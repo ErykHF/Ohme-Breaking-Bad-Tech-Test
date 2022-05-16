@@ -1,7 +1,8 @@
 package com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist
 
 import androidx.lifecycle.*
-import com.erykhf.android.ohmebreakingbadtechtest.data.source.Repository
+import com.erykhf.android.ohmebreakingbadtechtest.EspressoTestingIdlingResource
+import com.erykhf.android.ohmebreakingbadtechtest.data.source.repositories.Repository
 import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
 import com.erykhf.android.ohmebreakingbadtechtest.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,7 @@ class CharactersViewModel @Inject constructor(
     private val _characters = MutableLiveData<List<BreakingBadCharacterItem>?>()
     val characters: LiveData<List<BreakingBadCharacterItem>?> = _characters
 
-    private var chachedCharacters = listOf<BreakingBadCharacterItem>()
+    private var cachedCharacters = listOf<BreakingBadCharacterItem>()
     private var ifFiltering = true
 
 
@@ -31,18 +32,18 @@ class CharactersViewModel @Inject constructor(
         val listToSearch = if (ifFiltering) {
             _characters.value
         } else {
-            chachedCharacters
+            cachedCharacters
         }
         viewModelScope.launch {
             if (query == 0) {
-                _characters.value = chachedCharacters
+                _characters.value = cachedCharacters
                 return@launch
             }
             val results = listToSearch?.filter {
                 it.appearance.any { season -> season == query }
             }
             if (ifFiltering) {
-                chachedCharacters = _characters.value!!
+                cachedCharacters = _characters.value!!
                 ifFiltering = false
             }
             _characters.value = results
@@ -56,7 +57,9 @@ class CharactersViewModel @Inject constructor(
 
     fun getAllCharacters() {
         viewModelScope.launch {
+            //Espresso for testing recyclerview
             _spinner.value = true
+//            EspressoTestingIdlingResource.increment()
             val result = repository.loadBBCharacters()
             when (result) {
                 is Resource.Success -> {
@@ -69,6 +72,7 @@ class CharactersViewModel @Inject constructor(
                 }
 
             }
+//            EspressoTestingIdlingResource.decrement()
         }
     }
 

@@ -1,11 +1,8 @@
-package com.erykhf.android.ohmebreakingbadtechtest.data.source
+package com.erykhf.android.ohmebreakingbadtechtest.data.source.repositories
 
 import com.erykhf.android.ohmebreakingbadtechtest.data.source.remote.BreakingBadApi
 import com.erykhf.android.ohmebreakingbadtechtest.model.BreakingBadCharacterItem
 import com.erykhf.android.ohmebreakingbadtechtest.util.Resource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import retrofit2.Response
 import java.lang.Exception
 import javax.inject.Inject
 

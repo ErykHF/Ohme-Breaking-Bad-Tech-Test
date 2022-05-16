@@ -80,7 +80,6 @@ class CharactersFragment : Fragment(R.layout.fragment_character_list) {
                 binding.spinner.visibility = if (it) View.VISIBLE else View.GONE
                 if (it) {
                     binding.errorTextView.visibility = View.GONE
-                    binding.list.visibility = View.GONE
                     binding.errorButton?.visibility = View.GONE
                 }
             }

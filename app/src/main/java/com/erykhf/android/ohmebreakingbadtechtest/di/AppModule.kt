@@ -1,14 +1,11 @@
 package com.erykhf.android.ohmebreakingbadtechtest.di
 
-import android.content.Context
-import com.erykhf.android.ohmebreakingbadtechtest.data.source.Repository
+import com.erykhf.android.ohmebreakingbadtechtest.data.source.repositories.Repository
 import com.erykhf.android.ohmebreakingbadtechtest.data.source.remote.BreakingBadApi
-import com.erykhf.android.ohmebreakingbadtechtest.ui.characterlist.FilterSeasons
 import com.erykhf.android.ohmebreakingbadtechtest.util.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
